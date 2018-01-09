@@ -62,7 +62,7 @@ public class InfraDetail extends Activity {
         observ = oIntent.getStringExtra("observ");
 
         textView = (TextView) findViewById(R.id.textView);
-        button = (Button) findViewById(R.id.back);
+        button = (Button) findViewById(R.id.back) ;
         maps = (Button) findViewById(R.id.googleMaps);
         webView= (WebView) findViewById(R.id.webView);
         obs = (EditText) findViewById(R.id.obs);
