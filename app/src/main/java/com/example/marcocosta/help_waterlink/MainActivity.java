@@ -10,30 +10,25 @@ import android.text.Editable;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.ListAdapter;
 import android.widget.ListView;
-import android.widget.SimpleAdapter;
 import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.text.TextWatcher;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+
 
 public class MainActivity extends AppCompatActivity {
 
     private String TAG = MainActivity.class.getSimpleName();
     private ListView lv;
     private  TextView search;
+    private Button sync;
     SimpleCursorAdapter adapter;
     DbHandler d;
     ArrayList<Infrastructure> infrastructureList;
@@ -57,7 +52,6 @@ public class MainActivity extends AppCompatActivity {
         adapter = new SimpleCursorAdapter(this, android.R.layout.simple_list_item_1, d.obterTodosRegistos(pesquisa),
                 new String[]{"nome"}, new int[]{android.R.id.text1});
         if (!pesquisa.equals("")) {
-            //adapter.notifyDataSetChanged();
             lv.setAdapter(adapter);
         }
     }
@@ -71,6 +65,7 @@ public class MainActivity extends AppCompatActivity {
 
         infrastructureList = new ArrayList<>();
         lv = (ListView) findViewById(R.id.list);
+        sync=(Button) findViewById(R.id.sync);
         search = (TextView) findViewById(R.id.search);
         d = new DbHandler(this);
         d = d.open();
@@ -79,6 +74,20 @@ public class MainActivity extends AppCompatActivity {
 
         lv.setTranscriptMode(ListView.TRANSCRIPT_MODE_NORMAL);
         lv.setStackFromBottom(true);
+
+        /*
+        action Syn button
+         */
+
+        sync.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                d = new DbHandler(getApplicationContext());
+                d = d.open();
+                new GetContacts().execute();
+                Toast.makeText(MainActivity.this, "Os seus dados foram atualizados com sucesso!!", Toast.LENGTH_LONG).show();
+            }
+        });
         /*
         Declaração da SearchBox para pesquisa inteligente da infraestrutura
          */
@@ -115,7 +124,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 Cursor item = (Cursor) adapterView.getItemAtPosition(i);
-                String idInfra = item.getString(0);
+                //String idInfra = item.getString(0);
                 String meuID = item.getString(1);
                 String infraNome = item.getString(2);
                 String infraTipo = item.getString(3);
@@ -141,6 +150,7 @@ public class MainActivity extends AppCompatActivity {
         protected void onPreExecute() {
             super.onPreExecute();
             Toast.makeText(MainActivity.this,"Os dados estão a ser carregados...",Toast.LENGTH_LONG).show();
+            Toast.makeText(MainActivity.this,"Por favor aguarde...",Toast.LENGTH_LONG).show();
         }
         @Override
         protected Void doInBackground(Void... arg0) {

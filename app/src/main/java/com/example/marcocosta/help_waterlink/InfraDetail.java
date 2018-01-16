@@ -1,41 +1,20 @@
 package com.example.marcocosta.help_waterlink;
 
-import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.app.Fragment;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
-import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteQuery;
-import android.net.Uri;
+import android.database.Cursor;
 import android.os.Bundle;
-import android.text.TextUtils;
-import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewGroup;
 import android.webkit.WebView;
-import android.webkit.WebViewClient;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageView;
-import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
-import com.google.android.gms.maps.CameraUpdate;
-import com.google.android.gms.maps.CameraUpdateFactory;
-import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.MapView;
-import com.google.android.gms.maps.MapsInitializer;
-import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.model.LatLng;
-
-import org.w3c.dom.Text;
-
+import java.lang.reflect.Array;
 import java.util.ArrayList;
+
 
 public class InfraDetail extends Activity {
 
@@ -44,6 +23,7 @@ public class InfraDetail extends Activity {
     String meuID, infraNome, infraTipo, areaNeg,lat, longi, observ;
     protected Button button, maps, upload;
     protected WebView webView;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,8 +41,9 @@ public class InfraDetail extends Activity {
         longi = oIntent.getStringExtra("longi");
         observ = oIntent.getStringExtra("observ");
 
+
         textView = (TextView) findViewById(R.id.textView);
-        button = (Button) findViewById(R.id.back) ;
+        button = (Button) findViewById(R.id.back);
         maps = (Button) findViewById(R.id.googleMaps);
         webView= (WebView) findViewById(R.id.webView);
         obs = (EditText) findViewById(R.id.obs);
@@ -75,7 +56,11 @@ public class InfraDetail extends Activity {
 
         textView.setText("ID: "+meuID +"\n" + "Nome: " + infraNome + "\n" + "Tipo: " + infraTipo + "\n" + "Area de Negocio: " + areaNeg);
 
-        obs.setText(observ);
+     //*************************
+        DbHandler db = new DbHandler(getApplicationContext());
+        String output = db.getValues(meuID);
+        obs.setText(output);
+        //************************
 
 
         //upload information
@@ -87,14 +72,14 @@ public class InfraDetail extends Activity {
                 db.updateObs(meuID,observacoes);
 
                 Toast.makeText(getApplicationContext(),
-                        "Your data are sent!!",
+                        "Os seus dados foram gravados com sucesso!!",
                         Toast.LENGTH_LONG).show();
             }
 
         });
 
 
-
+        //back button declaration
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -102,11 +87,13 @@ public class InfraDetail extends Activity {
             }
         });
 
+        //goToGoogleMaps button
         maps.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 webView.getSettings().setJavaScriptEnabled(true);
                 webView.loadUrl("http://maps.google.com/maps?saddr="+lat+","+longi);
+                Toast.makeText(InfraDetail.this, "A abrig o GoogleMaps...", Toast.LENGTH_LONG).show();
             }
         });
 

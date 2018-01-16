@@ -2,18 +2,21 @@ package com.example.marcocosta.help_waterlink;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.database.CharArrayBuffer;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.widget.AdapterView;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
 public class DbHandler {
-    private DbHellper dbHelper;//call the method DbHellper
+
+    private DbHellper dbHelper;//call the DbHellper
     public SQLiteDatabase database; //call the SQLite database
 
     public DbHandler(Context context) {
-
         dbHelper = new DbHellper(context.getApplicationContext());
     }
 
@@ -23,7 +26,6 @@ public class DbHandler {
     }
 
     public void close() {
-
         dbHelper.close();// method to DB close
     }
 
@@ -43,8 +45,9 @@ public class DbHandler {
             where = "nome like '%" + pesq + "%' ";
         }
 
-        return database.query("infraestruturas", colunas, where,null, null, null, "meuID");
+        return database.query("infraestruturas", colunas, where, null, null, null, "meuID");
     }
+
     /*
     Criação de um método para verificação e atualização dos dados nas DB.
     Este método apenas verifica e devolve um contador
@@ -56,7 +59,7 @@ public class DbHandler {
                 id
         }, null, null, null);
 
-        return cursor.getCount()>0;
+        return cursor.getCount() > 0;
     }
 
     /*
@@ -64,10 +67,11 @@ public class DbHandler {
      */
 
     public void insertJasonData2(ArrayList<Infrastructure> varios) {
+
         for (Infrastructure cada :
                 varios) {
             //TODO
-            if (infrastructureExists(cada.meuID)==false) {
+            if (infrastructureExists(cada.meuID) == false) {
                 // se o cada.meuID já existir na DB passa à frente
                 // se não existir faz o insert abaixo
                 insertJasonData(cada.meuID, cada.nome, cada.tipo, cada.areaNeg, cada.lat, cada.longi);
@@ -88,29 +92,10 @@ public class DbHandler {
         return database.insert("infraestruturas", null, values);
     }
 
-    /*
-    #############################################################################
-    List Names
-    List Num
-    List all Items
-    #############################################################################
-     */
 
-
-    public List<String> obterTodosNumeros() {
-        ArrayList<String> numeros = new ArrayList<String>();
-        Cursor cursor = obterTodosRegistos("");
-        if (cursor.moveToFirst()) {
-            do {
-                numeros.add(cursor.getString(1));
-            } while (cursor.moveToNext());
-        }
-        cursor.close();
-        return numeros;
-    }
-
-    public HashMap<String,String> obterTodosNomes() {
-        HashMap<String,String> nomes = new HashMap<String,String>();
+    //method to return hasmap with name + id
+    public HashMap<String, String> obterTodosNomes() {
+        HashMap<String, String> nomes = new HashMap<String, String>();
         Cursor cursor = obterTodosRegistos("");
         if (cursor.moveToFirst()) {
             do {
@@ -121,7 +106,7 @@ public class DbHandler {
         return nomes;
     }
 
-    public int obterTodosCampos(List<Integer> osID, List<String> osNomes , List<String> osTipos,List<String> asAreaNegocio, List<String> asLat, List<String> asLongi, List<String> asObserv ) {
+    public int obterTodosCampos(List<Integer> osID, List<String> osNomes, List<String> osTipos, List<String> asAreaNegocio, List<String> asLat, List<String> asLongi, List<String> asObserv) {
         String[] colunas = new String[23];
         colunas[0] = "meuID";
         colunas[1] = "nome";
@@ -148,15 +133,13 @@ public class DbHandler {
         return osID.size();
     }
 
-
-
-
-
-    public void deleteDb (){
+    //if i want delete db
+    public void deleteDb() {
         database = dbHelper.getWritableDatabase();
-        database.delete ("infraestruturas",null,null);
+        database.delete("infraestruturas", null, null);
     }
 
+    //method to update data to DB
     public int updateObs(String oId, String observ) {
         database = dbHelper.getWritableDatabase();
         String whereClause = "meuID = ?";
@@ -166,5 +149,21 @@ public class DbHandler {
         values.put("observ", observ);
         return database.update("infraestruturas", values, whereClause, whereArgs);
     }
+
+    public String getValues(String oId) {
+        String values = new String();
+       database = dbHelper.getReadableDatabase();
+        Cursor cursor = database.rawQuery("select observ from infraestruturas where meuID = '" + oId +"'", null);
+
+        if(cursor.moveToFirst()) {
+            do {
+                values = (cursor.getString(cursor.getColumnIndex("observ")));
+            }while(cursor.moveToNext());
+        }
+        cursor.close();
+        database.close();
+        return values;
+    }
+
 }
 
