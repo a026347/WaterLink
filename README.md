@@ -12,6 +12,7 @@ A aplicação é composta por 2 activities (a main e infraDetail) sendo que:
   
   json file:
   https://waterlink.addp.pt/infraestrutura/getinfraestruturas
+  Anexo aos ficheiro, segue um ficheiro getinfraestruturas.json, caso haja falha com o servidor. Esperemos que não.
   
   O ficheiro é publico, no entanto é do conhecimento do coordenador do SI das Aguas do Douro e Paiva e Simdouro a utilização do mesmo para fins académicos.
   
